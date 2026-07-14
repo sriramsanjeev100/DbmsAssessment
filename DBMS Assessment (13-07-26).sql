@@ -158,7 +158,8 @@ SELECT d.dept_id,d.deptName,SUM(e.salary) AS total_salary FROM Department d INNE
 SELECT * FROM Employee WHERE hire_date >= DATE_SUB(CURDATE(), INTERVAL 2 YEAR);
 
 -- Question 45 ==> List the top 2 highest-paid employees in each department.
-
+SELECT emp_id, emp_name, salary, dept_id FROM (SELECT emp_id, emp_name, salary, dept_id, 
+DENSE_RANK() OVER (PARTITION BY dept_id ORDER BY salary DESC) AS salary_rank FROM Employee) ranked_employees WHERE salary_rank <= 2;
 
 -- Question 46 ==> Find employees whose salary is between the average and maximum salary.
 SELECT * FROM Employee WHERE salary BETWEEN (SELECT AVG(salary) FROM Employee) AND (SELECT MAX(salary) FROM Employee);
@@ -167,4 +168,4 @@ SELECT * FROM Employee WHERE salary BETWEEN (SELECT AVG(salary) FROM Employee) A
 SELECT d.dept_id,d.deptName FROM Department d INNER JOIN Employee e ON d.dept_id = e.dept_id GROUP BY d.dept_id, d.deptName HAVING MIN(e.salary) > 50000;
 
 -- Question 48 ==> Display the cumulative salary (running total) ordered by hire date using a window function.
-
+SELECT emp_id, emp_name, salary, hire_date, SUM(salary) OVER (ORDER BY hire_date) AS cumulative_salary FROM Employee;
