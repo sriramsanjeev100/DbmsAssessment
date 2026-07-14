@@ -140,22 +140,22 @@ SHOW INDEX FROM Employee;
 EXPLAIN SELECT * FROM Employee WHERE emp_name="John";
 
 -- Question 39 ==>  Find the employee with the second lowest salary.
-
+SELECT emp_name,salary FROM Employee WHERE salary = (SELECT MIN(salary) FROM Employee WHERE salary > (SELECT MIN(salary) FROM Employee));
 
 -- Question 40 ==> Find duplicate employee names.
 SELECT emp_name, COUNT(*) AS name_count FROM Employee GROUP BY emp_name HAVING COUNT(*) > 1;
 
 -- Question 41 ==> Find employees earning more than their department's average salary.
-
+SELECT e.emp_name, e.salary, e.dept_id FROM Employee e WHERE e.salary > (SELECT AVG(e2.salary) FROM Employee e2 WHERE e2.dept_id = e.dept_id);
 
 -- Question 42 ==> Display each employee along with the total salary of their department.
-
+SELECT emp_id,emp_name,dept_id,salary,SUM(salary) OVER (PARTITION BY dept_id) AS department_total_salary FROM Employee;
 
 -- Question 43 ==> Find the department with the highest total salary.
-
+SELECT d.dept_id,d.deptName,SUM(e.salary) AS total_salary FROM Department d INNER JOIN Employee e ON d.dept_id = e.dept_id GROUP BY d.dept_id, d.deptName ORDER BY total_salary DESC LIMIT 1;
 
 -- Question 44 ==> Find employees hired in the last 2 years.
-
+SELECT * FROM Employee WHERE hire_date >= DATE_SUB(CURDATE(), INTERVAL 2 YEAR);
 
 -- Question 45 ==> List the top 2 highest-paid employees in each department.
 
@@ -164,7 +164,7 @@ SELECT emp_name, COUNT(*) AS name_count FROM Employee GROUP BY emp_name HAVING C
 SELECT * FROM Employee WHERE salary BETWEEN (SELECT AVG(salary) FROM Employee) AND (SELECT MAX(salary) FROM Employee);
 
 -- Question 47 ==> Find departments where every employee earns more than 50,000.
-
+SELECT d.dept_id,d.deptName FROM Department d INNER JOIN Employee e ON d.dept_id = e.dept_id GROUP BY d.dept_id, d.deptName HAVING MIN(e.salary) > 50000;
 
 -- Question 48 ==> Display the cumulative salary (running total) ordered by hire date using a window function.
 
